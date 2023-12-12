@@ -43,7 +43,6 @@ P.S. You can delete this when you're done too. It's your config now :)
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -121,10 +120,11 @@ require('lazy').setup({
       signs = {
         add = { text = '+' },
         change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
+        delete = { text = '_', show_count=true },
+        topdelete = { text = '‾', show_count=true },
+        changedelete = { text = '~', show_count=true },
       },
+      numhl=true,
       on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
 
@@ -155,7 +155,7 @@ require('lazy').setup({
           return '<Ignore>'
         end, { expr = true, desc = 'Jump to previous hunk' })
 
-        -- Actions
+        -- gitsigns keymaps
         -- visual mode
         map('v', '<leader>hs', function()
           gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
@@ -187,7 +187,7 @@ require('lazy').setup({
       end,
     },
   },
-
+ 
   {
     -- Theme inspired by Atom
     'navarasu/onedark.nvim',
@@ -195,7 +195,7 @@ require('lazy').setup({
     config = function()
       vim.cmd.colorscheme 'onedark'
     end,
-  },
+  }, 
 
   {
     -- Set lualine as statusline
@@ -207,6 +207,7 @@ require('lazy').setup({
         theme = 'onedark',
         component_separators = '|',
         section_separators = '',
+        path = 1,
       },
     },
   },
@@ -265,7 +266,7 @@ require('lazy').setup({
   --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {})
 
 -- [[ Setting options ]]
@@ -308,31 +309,6 @@ vim.o.completeopt = 'menuone,noselect'
 
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
-
--- [[ Basic Keymaps ]]
-
--- My Keymaps
---vim.keymap.set('n', '<cmd>h', "<cmd>help vertical right")
-
--- [[ My Commands ]]
-
-vim.api.nvim_create_user_command('H',
-  function(opts)
-    vim.cmd("vertical rightbelow help " .. opts.fargs[1])
-    vim.cmd("vertical resize 90")
-  end,
-  {nargs = 1})
-
-vim.api.nvim_create_user_command("RE",
-  function(...)
-    vim.cmd("vertical rightbelow split")
-    if arg['n'] == 1 then
-      vim.cmd("Explore " .. arg[1])
-    else
-      vim.cmd("Explore")
-    end
-  end,
-  {nargs = '?'})
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
@@ -537,7 +513,7 @@ local on_attach = function(_, bufnr)
 
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+  nmap('<leader>k', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -679,6 +655,5 @@ cmp.setup {
     { name = 'luasnip' },
   },
 }
-
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
